@@ -13,6 +13,14 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         static int columms = 3;
         int[,] _a { get; set; }
 
+        public int[,] PuzzleTags
+        {
+            get
+            {
+                return _a;
+            }
+        }
+
         static public GameHelper GetInstance()
         {
             if (helper == null)
@@ -90,6 +98,17 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         moveSuccess = true;
                     }
 
+                }
+            }
+        }
+
+        public void LoadPuzzle(int[,] save)
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columms; j++)
+                {
+                    _a[i, j] = save[i, j];
                 }
             }
         }
