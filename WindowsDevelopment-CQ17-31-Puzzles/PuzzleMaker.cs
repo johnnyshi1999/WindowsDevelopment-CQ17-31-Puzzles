@@ -47,7 +47,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             int y = columms - 1;
 
             Random rng = new Random();
-            int swapTime = rng.Next(100, 200);
+            int swapTime = rng.Next(10, 50);
 
             for (int i = 0; i < swapTime; i++)
             {
@@ -88,6 +88,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
                     if (x > rows - 1 || x < 0 || y > columms - 1 || y < 0)
                     {
+                        x = oldX;
+                        y = oldY;
                         moveSuccess = false;
                         continue;
                     }
