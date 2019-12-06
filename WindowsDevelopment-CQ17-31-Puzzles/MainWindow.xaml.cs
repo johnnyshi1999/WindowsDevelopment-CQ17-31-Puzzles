@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -67,6 +68,15 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
             maker.GeneratePuzzle();
+            for (int i_tmp = 0; i_tmp < 3; i_tmp++)
+            {
+                for (int j_tmp = 0; j_tmp < 3; j_tmp++)
+                {
+                    int[,] _a = maker.PuzzleTags;
+                    Debug.Write($"{_a[i_tmp, j_tmp]} ");
+                }
+                Debug.WriteLine("");
+            }
             var screen = new OpenFileDialog();
 
             if (screen.ShowDialog() == true)
@@ -95,7 +105,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 {
                     if (!((i == 2) && (j == 2)))
                     {
-                        Debug.WriteLine($"{source.Width} - {source.Height}");
+                        //Debug.WriteLine($"{source.Width} - {source.Height}");
                         var h = (int)(source.Height < source.Width ? source.Height : source.Width) / rows;
                         var w = (int)(source.Height < source.Width ? source.Height : source.Width) / cols;
    
@@ -107,16 +117,16 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         cropImage.Height = w_fix;
                         cropImage.Source = cropBitmap;
                         leftBottomCanvas.Children.Add(cropImage);
-
-
                         cropImage.MouseLeftButtonDown += CropImage_MouseLeftButtonDown;
                         cropImage.PreviewMouseLeftButtonUp += CropImage_PreviewMouseLeftButtonUp;
-                        cropImage.Tag = i * 3 + j;
+                        cropImage.Tag = i * rows + j;
+                        cropImage.Name = "Piece" + (i * rows + j);
+                       
 
                         Tuple<int, int> position = maker.GetPiecePosition(i * 3 + j);
 
-                        Canvas.SetLeft(cropImage, startX + lineWeight/2 + position.Item1 * (w_fix + lineWeight));
-                        Canvas.SetTop(cropImage, startY  + lineWeight/2 + position.Item2 * (h_fix + lineWeight));
+                        Canvas.SetLeft(cropImage, startX + lineWeight/2 + position.Item2 * (w_fix + lineWeight));
+                        Canvas.SetTop(cropImage, startY  + lineWeight/2 + position.Item1 * (h_fix + lineWeight));
 
                         //cropImage.MouseLeftButtonUp
                     }
@@ -135,6 +145,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             selectedBitmap = sender as Image;      
             oldPosition_piece = e.GetPosition(this);
             lastPosition_piece = e.GetPosition(this);
+            
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -167,6 +178,114 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
         }
 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+               
+                    break;
+                case Key.Right:
+                    Tuple<int, int> emptyPiece_KeyRight = maker.GetPiecePosition(8);
+
+                    int i_KeyRight = emptyPiece_KeyRight.Item1;
+                    int j_KeyRight = emptyPiece_KeyRight.Item2 - 1;
+                    if (j_KeyRight >= 0 && j_KeyRight <= 2)
+                    {
+                        
+                        foreach (var child in leftBottomCanvas.Children)
+                        {
+                            if (child is Image)
+                            {
+                                if ((int)(child as Image).Tag == maker.PuzzleTags[i_KeyRight, j_KeyRight])
+                                {
+                                    selectedBitmap = child as Image;
+                                    break;
+                                }
+                            }
+                        }
+                     
+                        int from = startX + lineWeight / 2 + j_KeyRight * (h_fix + lineWeight);
+                        int to = startX + lineWeight / 2 + (j_KeyRight + 1) * (h_fix + lineWeight);
+                        movePieceAnimation(from, to, 1);
+                        maker.MovePiece(new Tuple<int, int>(i_KeyRight, j_KeyRight), new Tuple<int, int>(i_KeyRight, j_KeyRight + 1));
+                    }
+                    break;
+                case Key.Up:
+                   
+                    break;
+                case Key.Down:
+                    Tuple<int, int> emptyPiece_KeyDown = maker.GetPiecePosition(8);
+
+                    int i_KeyDown = emptyPiece_KeyDown.Item1 - 1;
+                    int j_KeyDown = emptyPiece_KeyDown.Item2;
+                    if (i_KeyDown >= 0 && i_KeyDown <= 2)
+                    {
+                        //Find piece to move      
+                        foreach (var child in leftBottomCanvas.Children)
+                        {
+                            if (child is Image)
+                            {
+                                if ((int)(child as Image).Tag == maker.PuzzleTags[i_KeyDown, j_KeyDown])
+                                {
+                                    selectedBitmap = child as Image;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //Set up and move piece
+                        int from = startY + lineWeight / 2 + i_KeyDown * (h_fix + lineWeight);
+                        int to = startY + lineWeight / 2 + (i_KeyDown + 1) * (h_fix + lineWeight);
+                        movePieceAnimation(from, to, 3);
+                        maker.MovePiece(new Tuple<int, int>(i_KeyDown, j_KeyDown), new Tuple<int, int>(i_KeyDown + 1, j_KeyDown));
+                    }
+                    break;
+            }
+        }
+        /// <summary>
+        ///     Move piece effect with animation
+        ///     This function use selectedBitmap property as target to move
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="direction">
+        ///     1: left to right
+        ///     2: right to left
+        ///     3: down
+        ///     4: up
+        /// </param>
+        private void movePieceAnimation(int from, int to, int direction)
+        {
+            var animation = new DoubleAnimation();
+
+            animation.From = from;
+            animation.To = to;
+            animation.Duration = new Duration(TimeSpan.FromSeconds(1));
+
+            var story = new Storyboard();
+
+            story.Children.Add(animation);
+            Storyboard.SetTargetName(animation, selectedBitmap.Name);
+            Storyboard.SetTarget(animation, selectedBitmap);
+            switch(direction)
+            {
+                case 1:
+                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.LeftProperty));
+                    break;
+                case 2:
+                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.RightProperty));
+                    break;
+                case 3:
+                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.TopProperty));
+                    break;
+                case 4:
+                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.BottomProperty));
+                    break;
+            }
+            story.Begin(this);
+        }
+
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             isDragging = false;
@@ -187,6 +306,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + j * (w_fix + lineWeight));
                 Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + i * (h_fix + lineWeight));
             }
+            //movePieceAnimation(0, 800, 1);
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)

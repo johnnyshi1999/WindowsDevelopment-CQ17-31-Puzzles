@@ -43,65 +43,65 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 }
             }
 
-            int x = rows - 1;
-            int y = columms - 1;
+            //int x = rows - 1;
+            //int y = columms - 1;
 
-            Random rng = new Random();
-            int swapTime = rng.Next(10, 50);
+            //Random rng = new Random();
+            //int swapTime = rng.Next(10, 50);
 
-            for (int i = 0; i < swapTime; i++)
-            {
-                int direction = 0;
-                bool moveSuccess = false;
+            //for (int i = 0; i < swapTime; i++)
+            //{
+            //    int direction = 0;
+            //    bool moveSuccess = false;
 
-                while (moveSuccess != true)
-                {
-                    int oldX = x;
-                    int oldY = y;
-                    direction = rng.Next(0, 3);
+            //    while (moveSuccess != true)
+            //    {
+            //        int oldX = x;
+            //        int oldY = y;
+            //        direction = rng.Next(0, 3);
 
-                    // move to the left
+            //        // move to the left
 
-                    switch (direction)
-                    {
-                        case 0: //move left
-                            {
-                                x--;
-                                break;
-                            }
-                        case 1: //move up
-                            {
-                                y--;
-                                break;
-                            }
-                        case 2: //move right
-                            {
-                                x++;
-                                break;
-                            }
-                        case 3: //move down
-                            {
-                                y++;
-                                break;
-                            }
-                    }
+            //        switch (direction)
+            //        {
+            //            case 0: //move left
+            //                {
+            //                    x--;
+            //                    break;
+            //                }
+            //            case 1: //move up
+            //                {
+            //                    y--;
+            //                    break;
+            //                }
+            //            case 2: //move right
+            //                {
+            //                    x++;
+            //                    break;
+            //                }
+            //            case 3: //move down
+            //                {
+            //                    y++;
+            //                    break;
+            //                }
+            //        }
 
-                    if (x > rows - 1 || x < 0 || y > columms - 1 || y < 0)
-                    {
-                        x = oldX;
-                        y = oldY;
-                        moveSuccess = false;
-                        continue;
-                    }
-                    else
-                    {
-                        _a[oldX, oldY] = _a[x, y];
-                        _a[x, y] = 8;
-                        moveSuccess = true;
-                    }
+            //        if (x > rows - 1 || x < 0 || y > columms - 1 || y < 0)
+            //        {
+            //            x = oldX;
+            //            y = oldY;
+            //            moveSuccess = false;
+            //            continue;
+            //        }
+            //        else
+            //        {
+            //            _a[oldX, oldY] = _a[x, y];
+            //            _a[x, y] = 8;
+            //            moveSuccess = true;
+            //        }
 
-                }
-            }
+            //    }
+            //}
         }
 
         public void LoadPuzzle(int[,] save)
