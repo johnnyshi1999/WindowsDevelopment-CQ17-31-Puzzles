@@ -5,14 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WindowsDevelopment_CQ17_31_Puzzles"
         mc:Ignorable="d"
-        Title="8 Puzzles" Height="700" Width="850" Loaded="Window_Loaded"
+        Title="8 Puzzles" Height="700" Width="850" 
+        Loaded="Window_Loaded"
+        MouseMove="Window_MouseMove"
         Icon="images/icon_app.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="6*" />
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>
-        <Canvas Name="leftCanvas" Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2.5*" />
+            <RowDefinition Height="7.5*" />
+        </Grid.RowDefinitions>
+        <Canvas Name="leftTopCanvas" Grid.Row="0" Grid.Column="0">
             <Label Content="8 PUZZLE" Foreground="#767167" FontWeight="Bold" FontSize="60" Canvas.Left="39" Canvas.Top="41" Height="82" Width="279" Padding="0"></Label>
             <Button Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
                     Canvas.Left="325" Canvas.Top="126" Height="36" Width="122" 
@@ -23,9 +29,14 @@
                     <Label Content="3:00" Foreground="White" FontSize="15" HorizontalAlignment="Center" Padding="0"/>
                 </StackPanel>
             </Label>
-            <!--<Image Source="images/4.png" Canvas.Left="39" Canvas.Top="195" Height="400" Width="400" />-->
+            <!--<Canvas Name="leftBottomCanvas" Height="503" Width="506" Canvas.Top="167">
+                <Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />
+            </Canvas>-->
         </Canvas>
-        <Canvas Name="rightCanvas" Grid.Column="1">
+        <Canvas Name="leftBottomCanvas" Grid.Row="1" Grid.Column="0">
+            <!--<Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />-->
+        </Canvas>
+        <Canvas Name="rightCanvas" Grid.Row="0" Grid.Column="1"  Grid.RowSpan="2">
             <Label Style="{StaticResource FlatLabelStyle}" Content="Your image" Canvas.Left="29" Canvas.Top="41" Foreground="White" Height="35" Width="130" FontSize="20" FontWeight="Bold"/>
             <Button Name="LeftButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="509" Canvas.Left="29" Width="81" Height="85" RenderTransformOrigin="0.188,0.471">
                 <Image Source="images/button_left.png" />
@@ -39,8 +50,7 @@
             <Button Name="DownButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="509" Canvas.Left="131" Width="81" Height="85">
                 <Image Source="images/button_down.png" />
             </Button>
-            <Image Name ="PreviewImage" Source="images/city.jpg" Height="280" Width="280" Canvas.Left="29" Canvas.Top="88" />
+            <Image Name ="PreviewImage"  Height="280" Width="280" Canvas.Left="29" Canvas.Top="88" />
         </Canvas>
-
     </Grid>
 </Window>
