@@ -419,9 +419,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             Storyboard.SetTargetProperty(verticalMove, new PropertyPath(Canvas.TopProperty));
 
             story.Begin(this);
-            story.Stop(this);
-            story.Completed += completed;
+            story.Remove(selectedBitmap);
+
             
+
+            //story.Completed += completed;
+
 
             //int newX = startX + lineWeight / 2 + newPos.Item1 * (w_fix + lineWeight);
 
