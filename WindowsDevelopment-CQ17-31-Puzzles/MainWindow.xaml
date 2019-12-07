@@ -34,12 +34,12 @@
                 <Button Name="StartGameButton" Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
                         Height="36" Width="122"
                         Click="NewGame_Click"></Button>
-                <Button Name="SaveGameButton" Content="Save Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                        Height="36" Width="122" Margin="10,0,10,0" 
-                        Click="SaveGame_Click"></Button>
                 <Button Name="LoadGameButton" Content="Load Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                        Height="36" Width="122" 
+                        Height="36" Width="122" Margin="10,0,10,0" 
                         Click="LoadGame_Click"></Button>
+                <Button Name="SaveGameButton" Content="Save Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122" 
+                        Click="SaveGame_Click"></Button>
             </StackPanel>
         </Canvas>
         <Canvas Name="leftBottomCanvas" Grid.Row="1" Grid.Column="0">
