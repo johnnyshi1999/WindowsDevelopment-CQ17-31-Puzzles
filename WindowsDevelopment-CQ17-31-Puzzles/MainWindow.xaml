@@ -27,7 +27,7 @@
             <Label  Style="{StaticResource FlatLabelStyle}" Canvas.Left="375" Canvas.Top="21" Height="60" Width="72" FontWeight="Bold">
                 <StackPanel Orientation="Vertical">
                     <Label Content="Time" Foreground="#FBF8F1" FontSize="20" Padding="0" />
-                    <Label Content="3:00" Foreground="White" FontSize="15" HorizontalAlignment="Center" Padding="0"/>
+                    <Label Name="LabelTimer" Foreground="White" FontSize="15" HorizontalAlignment="Center" Padding="0"/>
                 </StackPanel>
             </Label>
             <!--<Canvas Name="leftBottomCanvas" Height="503" Width="506" Canvas.Top="167">
