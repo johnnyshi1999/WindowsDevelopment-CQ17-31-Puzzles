@@ -357,6 +357,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //}
         }
 
+        Storyboard story;
         /// <summary>
         ///     Move piece effect with animation
         ///     This function use selectedBitmap property as target to move
@@ -403,7 +404,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             verticalMove.To = startY + lineWeight / 2 + newPos.Item2 * (h_fix + lineWeight);
             verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.5));
 
-            var story = new Storyboard();
+            story = new Storyboard();
 
             story.Children.Add(horiztontalMove);
             story.Children.Add(verticalMove);
@@ -419,6 +420,33 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
             story.Begin(this);
             story.Stop(this);
+            story.Completed += completed;
+            
+
+            //int newX = startX + lineWeight / 2 + newPos.Item1 * (w_fix + lineWeight);
+
+
+            //int newY = startY + lineWeight / 2 + newPos.Item2 * (h_fix + lineWeight);
+
+            //DoubleAnimation anim1 = new DoubleAnimation(0, newX - Canvas.GetLeft(selectedBitmap), TimeSpan.FromSeconds(0.5));
+            //DoubleAnimation anim2 = new DoubleAnimation(0, newY - Canvas.GetTop(selectedBitmap), TimeSpan.FromSeconds(0.5));
+
+
+            //TranslateTransform trans = new TranslateTransform();
+
+            //selectedBitmap.RenderTransform = trans;
+
+            //trans.BeginAnimation(TranslateTransform.XProperty, anim1);
+            //trans.BeginAnimation(TranslateTransform.YProperty, anim2);
+
+            //trans.BeginAnimation(TranslateTransform.XProperty, null);
+            //trans.BeginAnimation(TranslateTransform.YProperty, null);
+        }
+
+        private void completed(object sender, EventArgs e)
+        {
+            story.Remove(selectedBitmap);
+            MessageBox.Show("finished");
         }
 
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
