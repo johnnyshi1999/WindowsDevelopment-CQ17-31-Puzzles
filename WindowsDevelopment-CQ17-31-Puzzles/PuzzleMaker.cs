@@ -156,15 +156,14 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         /// <returns></returns>
         public bool MovePiece(Tuple<int, int> oldPos, Tuple<int, int> newPos)
         {
-
-            //if the moved to postion is not the empty space
-            if (_a[newPos.Item1, newPos.Item2] != 8)
+            //if the position is out of range
+            if (newPos.Item1 < 0 || newPos.Item1 > columms - 1 || newPos.Item2 < 0 || newPos.Item2 > rows - 1)
             {
                 return false;
             }
 
-            //if the position is out of range
-            if (newPos.Item1 < 0 || newPos.Item1 > columms - 1|| newPos.Item2 < 0 || newPos.Item2 > rows - 1)
+            //if the moved to postion is not the empty space
+            if (_a[newPos.Item1, newPos.Item2] != 8)
             {
                 return false;
             }
