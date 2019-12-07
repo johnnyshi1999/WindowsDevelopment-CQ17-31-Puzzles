@@ -8,6 +8,7 @@
         Title="8 Puzzles" Height="700" Width="850" 
         Loaded="Window_Loaded"
         MouseMove="Window_MouseMove"
+        KeyDown="Window_KeyDown"
         Icon="images/icon_app.png">
     <Grid>
         <Grid.ColumnDefinitions>
