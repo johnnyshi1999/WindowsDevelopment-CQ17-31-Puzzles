@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -25,6 +27,9 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Gameplay vars
+        bool isGameStarted = false;
+        string currentImagePath = null;
         PuzzleMaker maker;
         //Timer timer;
         //int count = 60 * 3;
@@ -62,6 +67,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             w_fix = colWidth - lineWeight;
 
             maker = PuzzleMaker.GetInstance();
+
+            //Initialize states of UI Components
+            SaveGameButton.IsEnabled = false;
+            leftBottomCanvas.IsEnabled = false;
+
+
             //timer = new Timer();
             //timer.Interval = 1000;
             //timer.Elapsed += Timer_Elapsed;
@@ -86,34 +97,64 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //drawUI();
         }
 
+        private void InitGame(string pictureName, double timeInMiliseconds)
+        {
+            leftBottomCanvas.IsEnabled = true;
+            leftBottomCanvas.Children.Clear();
+            drawUI();
+            SetupPieces(pictureName);
+            //Set time
+            _time = TimeSpan.FromMilliseconds(timeInMiliseconds);
+            LabelTimer.Content = _time.ToString(@"mm\:ss");
+
+            _timer = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal,
+                delegate
+                {
+                    _time = _time.Add(TimeSpan.FromSeconds(-1));
+                    LabelTimer.Content = _time.ToString(@"mm\:ss");
+                    if (_time == TimeSpan.Zero)
+                    {
+                        _timer.Stop();
+                        leftBottomCanvas.IsEnabled = false;
+                        System.Windows.MessageBox.Show("Time up", "You lose", MessageBoxButton.OK, MessageBoxImage.Error);
+                        resetVariables();
+                        return;
+                    }
+                }, System.Windows.Application.Current.Dispatcher);
+
+            _timer.Start();
+
+            //Set up flow
+            currentImagePath = pictureName;
+            isGameStarted = true;
+            SaveGameButton.IsEnabled = true;
+            LoadGameButton.IsEnabled = false;
+            StartGameButton.Content = "Exit Game";
+        }
+
+        private void ExitGame_Click()
+        {
+            _timer.Stop();
+            leftBottomCanvas.IsEnabled = false;
+            resetVariables();
+            StartGameButton.Content = "New Game";
+        }
+
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
+            if (isGameStarted)
+            {
+                ExitGame_Click();
+                return;
+            }
+
             maker.GeneratePuzzle();
            
-            var screen = new OpenFileDialog();
+            var screen = new Microsoft.Win32.OpenFileDialog();
 
             if (screen.ShowDialog() == true)
             {
-                leftBottomCanvas.Children.Clear();
-                drawUI();
-                SetupPieces(screen.FileName);
-                //Set time
-                _time = TimeSpan.FromMinutes(3);
-
-                _timer = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal,
-                    delegate
-                    {
-                        LabelTimer.Content = _time.ToString(@"mm\:ss");
-                        if (_time == TimeSpan.Zero)
-                        {
-                            System.Windows.MessageBox.Show("Time up", "You lose", MessageBoxButton.OK, MessageBoxImage.Error);
-                            _timer.Stop();
-                        }
-                        _time = _time.Add(TimeSpan.FromSeconds(-1));
-                    }, Application.Current.Dispatcher);
-
-                _timer.Start();
-
+                InitGame(screen.FileName, 180000);
             }
         }
 
@@ -177,7 +218,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             
         }
 
-        private void Window_MouseMove(object sender, MouseEventArgs e)
+        private void Window_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var position = e.GetPosition(this);
             int i = (int)(position.Y - startY - leftTopCanvas.ActualHeight) / colWidth;
@@ -207,7 +248,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (!isDragging)
             {
@@ -215,22 +256,22 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 {
                     case Key.Left:
                         {
-                            LeftButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            LeftButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Right:
                         {
-                            RighButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            RighButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Up:
                         {
-                            UpButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            UpButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Down:
                         {
-                            DownButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            DownButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                 }
@@ -459,7 +500,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         private void completed(object sender, EventArgs e)
         {
             story.Remove(selectedBitmap);
-            MessageBox.Show("finished");
+            System.Windows.MessageBox.Show("finished");
         }
 
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -483,7 +524,10 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 bool isWIn = maker.CheckWin();
                 if (isWIn)
                 {
-                    MessageBox.Show("You won!!!!");
+                    _timer.Stop();
+                    leftBottomCanvas.IsEnabled = false;
+                    System.Windows.MessageBox.Show("You won!!!!");
+                    resetVariables();
                 }
             }
             // Snap to old position if piece is out of range
@@ -494,38 +538,6 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
             //movePieceAnimation(0, 800, 1);
         }
-
-        //private bool isMoveValid()
-        //{
-           
-        //    Tuple<int, int> emptyPiece = maker.GetPiecePosition(8);
-        //    Tuple<int, int> selectedBitmap_Position = maker.GetPiecePosition((int)selectedBitmap.Tag);
-        //    if (emptyPiece.Item1 - 1 == selectedBitmap_Position.Item1 && emptyPiece.Item2 == selectedBitmap_Position.Item2)
-        //        return true;
-        //    if (emptyPiece.Item1 + 1 == selectedBitmap_Position.Item1 && emptyPiece.Item2 == selectedBitmap_Position.Item2)
-        //        return true;
-        //    if (emptyPiece.Item1 == selectedBitmap_Position.Item1 && emptyPiece.Item2 - 1 == selectedBitmap_Position.Item2)
-        //        return true;
-        //    if (emptyPiece.Item1 == selectedBitmap_Position.Item1 && emptyPiece.Item2 + 1 == selectedBitmap_Position.Item2)
-        //        return true;   
-        //    return false;
-        //}
-
-        //private void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        //{
-        //    count--;
-        //    if (count == 0)
-        //    {
-        //        count = 60 * 3;
-        //        bool isWIn = maker.CheckWin();
-
-        //        if (isWIn != true)
-        //        {
-        //            MessageBox.Show("Time out!!! You lose");
-        //        }          
-        //        timer.Stop();
-        //    }
-        //}
 
         private void drawUI()
         {
@@ -554,6 +566,116 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 line_vertical.Y1 = startY;
                 line_vertical.X2 = startX + colWidth * j;
                 line_vertical.Y2 = startY + rows * rowHeight;
+            }
+        }
+
+        private void SaveGame_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isGameStarted) return;
+
+            _timer.Stop();
+
+            var screen = new FolderBrowserDialog();
+
+            if (screen.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string path = screen.SelectedPath + "\\Puzzles.psf";
+
+                var writer = new StreamWriter(path, false);
+               
+                var currentState = maker.PieceOrder;
+
+                StringBuilder fileContentString = new StringBuilder();
+                // Image file
+                fileContentString.Append(currentImagePath);
+                fileContentString.Append("\n");
+
+                //Current time
+                fileContentString.Append(_time.TotalMilliseconds.ToString());
+                fileContentString.Append("\n");
+
+                // Game state
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < cols; j++)
+                    {
+                        fileContentString.Append($"{currentState[i, j]}");
+                        if (j != cols - 1)
+                        {
+                            fileContentString.Append(" ");
+                        }
+                    }
+                    fileContentString.Append("\n");
+                }
+
+                writer.Write(Convert.ToBase64String(Encoding.ASCII.GetBytes(fileContentString.ToString())));
+
+                writer.Close();
+
+                System.Windows.MessageBox.Show("Game is saved");
+            }
+
+            _timer.Start();
+        }
+
+        private void LoadGame_Click(object sender, RoutedEventArgs e)
+        {
+            if (isGameStarted) return;
+
+            var screen = new Microsoft.Win32.OpenFileDialog
+            {
+                Multiselect = false
+            };
+
+            if(screen.ShowDialog() == true)
+            {
+                var fileInfo = screen.SafeFileName;
+                if(!fileInfo.Equals("Puzzles.psf"))
+                {
+                    System.Windows.MessageBox.Show("FileName Invalid");
+                    return;
+                }
+                var path = screen.FileName;
+
+                var fileContent = File.ReadAllText(path);
+                byte[] byteArray = Convert.FromBase64String(fileContent);
+
+                MemoryStream stream = new MemoryStream(byteArray);
+
+                // convert stream to string
+                StreamReader reader = new StreamReader(stream);
+
+                //Get image path
+                string imagePath = reader.ReadLine();
+
+                //If file doesn't exists
+                if(!File.Exists(imagePath))
+                {
+                    System.Windows.MessageBox.Show("Image from save file does not exist, please recheck :3 ...", "Image not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                //Get time
+                double currentTime = double.Parse(reader.ReadLine());
+
+                //Get state of gameboard
+                int[,] tempState = new int[rows, cols];
+
+                for (int i = 0; i < rows; i++)
+                {
+                    var tokens = reader.ReadLine().Split(
+                        new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
+                    for (int j = 0; j < cols; j++)
+                    {
+                        tempState[i, j] = int.Parse(tokens[j]);
+                    }
+                }
+
+                maker.LoadPuzzle(tempState);
+
+                //Init board
+                InitGame(imagePath, currentTime);
             }
         }
 
@@ -605,12 +727,24 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 bool isWIn = maker.CheckWin();
                 if (isWIn)
                 {
-                    MessageBox.Show("You won!!!!");
+                    _timer.Stop();
+                    leftBottomCanvas.IsEnabled = false;
+                    System.Windows.MessageBox.Show("You won!!!!");
+                    resetVariables();
                 }
             }
         }
 
-        
+        private void resetVariables()
+        {
+            currentImagePath = null;
+            isGameStarted = false;
+            leftBottomCanvas.Children.Clear();
+            PreviewImage.Source = null;
+            SaveGameButton.IsEnabled = false;
+            LoadGameButton.IsEnabled = true;
+            LabelTimer.Content = null;
+        }
 
         Image findImageByTag(int tag)
         {
@@ -625,5 +759,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
             return null;
         }
+
+        
     }
 }

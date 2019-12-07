@@ -21,15 +21,22 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="#E59400" />
                                 <Setter Property="Foreground" Value="White" />
+                                <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter Property="Background" Value="OrangeRed" />
                                 <Setter Property="Foreground" Value="White" />
                             </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.75"/>
+                                <Setter Property="Background" Value="DimGray"/>
+                                <Setter Property="Cursor" Value="None"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            
         </Style>
         <Style TargetType="{x:Type Label}" x:Key="FlatLabelStyle">
             <Setter Property="Background" Value="#BBAFA3" />
