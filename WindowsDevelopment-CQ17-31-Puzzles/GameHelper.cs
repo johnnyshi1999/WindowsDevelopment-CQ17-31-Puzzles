@@ -18,7 +18,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         Timer timer;
         //public Image[,] pieces;
 
-        int count = 60 * 3;
+        int count = 60 * 1;
 
         public GameHelper()
         {
@@ -64,8 +64,5 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 LoadedImage.Source = source;
             }
         }
-
-
-
     }
 }
