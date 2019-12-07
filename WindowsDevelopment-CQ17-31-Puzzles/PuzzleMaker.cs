@@ -41,7 +41,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             {
                 for (int j = 0; j < columms; j++)
                 {
-                    _a[i, j] = i * 3 + j;
+                    _a[i, j] = j * 3 + i;
                 }
             }
 
@@ -200,7 +200,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //swept through whole matrix to see if checkedTag is in the right position
             while (checkedTag < 8)
             {
-                if (_a[checkedTag / 3, checkedTag % 3] != checkedTag)
+                if (_a[checkedTag % 3, checkedTag / 3] != checkedTag)
                     return false;
                 checkedTag++;
             }
@@ -210,11 +210,11 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         void Test()
         {
-            for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int i = 0; i < 3; i++)
                 {
-                    Console.Write(_a[j, i]);
+                    Console.Write(_a[i, j]);
                 }
                 Console.WriteLine();
             }
