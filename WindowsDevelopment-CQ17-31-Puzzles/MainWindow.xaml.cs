@@ -418,10 +418,14 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             Storyboard.SetTargetProperty(horiztontalMove, new PropertyPath(Canvas.LeftProperty));
             Storyboard.SetTargetProperty(verticalMove, new PropertyPath(Canvas.TopProperty));
 
-            story.Begin(this);
-            story.Remove(selectedBitmap);
 
+            story.FillBehavior = FillBehavior.Stop;
+            story.Completed += new System.EventHandler(this.Story_Complete);
+            story.Begin(this);
             
+
+
+
 
             //story.Completed += completed;
 
@@ -444,6 +448,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
             //trans.BeginAnimation(TranslateTransform.XProperty, null);
             //trans.BeginAnimation(TranslateTransform.YProperty, null);
+        }
+
+        private void Story_Complete(object sender, EventArgs e)
+        {
+            Canvas.SetLeft(selectedBitmap, Canvas.GetLeft(selectedBitmap));
+            Canvas.SetTop(selectedBitmap, Canvas.GetTop(selectedBitmap));
         }
 
         private void completed(object sender, EventArgs e)
