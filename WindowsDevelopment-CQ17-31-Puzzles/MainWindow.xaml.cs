@@ -30,6 +30,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         //Gameplay vars
         bool isGameStarted = false;
         string currentImagePath = null;
+        BitmapImage currentImage = null;
         PuzzleMaker maker;
         //Timer timer;
         //int count = 60 * 3;
@@ -97,12 +98,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //drawUI();
         }
 
-        private void InitGame(string pictureName, double timeInMiliseconds)
+        private void resetTimer(double timeInMiliseconds)
         {
-            leftBottomCanvas.IsEnabled = true;
-            leftBottomCanvas.Children.Clear();
-            drawUI();
-            SetupPieces(pictureName);
             //Set time
             _time = TimeSpan.FromMilliseconds(timeInMiliseconds);
             LabelTimer.Content = _time.ToString(@"mm\:ss");
@@ -121,29 +118,48 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         return;
                     }
                 }, System.Windows.Application.Current.Dispatcher);
+        }
 
-            _timer.Start();
+        private void InitGame(string pictureName, double timeInMiliseconds)
+        {
+            leftBottomCanvas.IsEnabled = true;
+            leftBottomCanvas.Children.Clear();
+            drawUI();
+            SetupPieces(pictureName);
+
+            resetTimer(timeInMiliseconds);
 
             //Set up flow
             currentImagePath = pictureName;
             isGameStarted = true;
             SaveGameButton.IsEnabled = true;
-            LoadGameButton.IsEnabled = false;
+            LoadGameButton.Content = "Reset Game";
             StartGameButton.Content = "Exit Game";
         }
 
         private void ExitGame_Click()
         {
-            _timer.Stop();
             leftBottomCanvas.IsEnabled = false;
             resetVariables();
-            StartGameButton.Content = "New Game";
+        }
+
+        private void ResetGame_Click()
+        {
+            //Reset Timer
+            resetTimer(180000);
+            //Generate new puzzle
+            maker.GeneratePuzzle();
+            //Clear
+            leftBottomCanvas.Children.RemoveRange(rows + cols + 2, leftBottomCanvas.Children.Count - rows - 1 - cols - 1);
+            //Add picture
+            AddPictureToCanvas(currentImage);
         }
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
         {
             if (isGameStarted)
             {
+                _timer.Stop();
                 ExitGame_Click();
                 return;
             }
@@ -158,18 +174,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
         }
 
-        public void SetupPieces(String fileName)
+        private void AddPictureToCanvas(BitmapImage source)
         {
-            var source = new BitmapImage(
-                    new Uri(fileName, UriKind.Absolute));
-            //Uri uri = new Uri(fileName, UriKind.Absolute);
-            //BitmapImage source = new BitmapImage();
-            //source.BeginInit();
-            //source.UriSource = uri;
-            //source.DecodePixelWidth = (colWidth - lineWeight) * 3;
-            //source.DecodePixelHeight = (rowHeight - lineWeight) * 3;
-            //source.EndInit();
-            PreviewImage.Source = source;
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
@@ -179,7 +185,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         //Debug.WriteLine($"{source.Width} - {source.Height}");
                         var h = (int)(source.Height < source.Width ? source.Height : source.Width) / rows;
                         var w = (int)(source.Height < source.Width ? source.Height : source.Width) / cols;
-   
+
                         var rect = new Int32Rect(j * w, i * h, w, h);
                         var cropBitmap = new CroppedBitmap(source, rect);
                         var cropImage = new Image();
@@ -195,13 +201,29 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         cropImage.Name = "Piece" + (i * rows + j);
                         Tuple<int, int> position = maker.GetPiecePosition(i * 3 + j);
 
-                        Canvas.SetLeft(cropImage, startX + lineWeight/2 + position.Item1 * (w_fix + lineWeight));
-                        Canvas.SetTop(cropImage, startY  + lineWeight/2 + position.Item2 * (h_fix + lineWeight));
+                        Canvas.SetLeft(cropImage, startX + lineWeight / 2 + position.Item1 * (w_fix + lineWeight));
+                        Canvas.SetTop(cropImage, startY + lineWeight / 2 + position.Item2 * (h_fix + lineWeight));
 
                         //cropImage.MouseLeftButtonUp
                     }
                 }
             }
+        }
+
+        public void SetupPieces(string fileName)
+        {
+            var source = new BitmapImage(
+                    new Uri(fileName, UriKind.Absolute));
+            //Uri uri = new Uri(fileName, UriKind.Absolute);
+            //BitmapImage source = new BitmapImage();
+            //source.BeginInit();
+            //source.UriSource = uri;
+            //source.DecodePixelWidth = (colWidth - lineWeight) * 3;
+            //source.DecodePixelHeight = (rowHeight - lineWeight) * 3;
+            //source.EndInit();
+            currentImage = source;
+            PreviewImage.Source = source;
+            AddPictureToCanvas(source);
         }
 
         bool isDragging = false;
@@ -620,7 +642,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         private void LoadGame_Click(object sender, RoutedEventArgs e)
         {
-            if (isGameStarted) return;
+            if (isGameStarted)
+            {
+                _timer.Stop();
+                ResetGame_Click();
+                return;
+            }
 
             var screen = new Microsoft.Win32.OpenFileDialog
             {
@@ -742,7 +769,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             leftBottomCanvas.Children.Clear();
             PreviewImage.Source = null;
             SaveGameButton.IsEnabled = false;
-            LoadGameButton.IsEnabled = true;
+            StartGameButton.Content = "New Game";
+            LoadGameButton.Content = "Load Game";
             LabelTimer.Content = null;
         }
 
