@@ -209,6 +209,32 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (!isDragging)
+            {
+                switch (e.Key)
+                {
+                    case Key.Left:
+                        {
+                            LeftButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            break;
+                        }
+                    case Key.Right:
+                        {
+                            RighButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            break;
+                        }
+                    case Key.Up:
+                        {
+                            UpButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            break;
+                        }
+                    case Key.Down:
+                        {
+                            DownButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            break;
+                        }
+                }
+            }
             //if (!isDragging)
             //{
             //    switch (e.Key)
@@ -343,30 +369,56 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         ///     3: down
         ///     4: up
         /// </param>
-        private void movePieceAnimation(int from, int to, int direction)
+        private void movePieceAnimation(Tuple<int, int> oldPos, Tuple<int, int> newPos/*int from, int to, int direction*/)
         {
-            var animation = new DoubleAnimation();
+            //var animation = new DoubleAnimation();
 
-            animation.From = from;
-            animation.To = to;
-            animation.Duration = new Duration(TimeSpan.FromSeconds(0.5));
+            //animation.From = from;
+            //animation.To = to;
+            //animation.Duration = new Duration(TimeSpan.FromSeconds(0.5));
+
+            //var story = new Storyboard();
+
+            //story.Children.Add(animation);
+            //Storyboard.SetTargetName(animation, selectedBitmap.Name);
+            //Storyboard.SetTarget(animation, selectedBitmap);
+            //switch(direction)
+            //{
+            //    case 1:
+            //        Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.LeftProperty));
+            //        break;
+            //    case 2:
+            //        Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.TopProperty));
+            //        break;
+
+            //}
+            //story.Begin(this);
+            var horiztontalMove = new DoubleAnimation();
+            horiztontalMove.From = startX + lineWeight / 2 + oldPos.Item1 * (w_fix + lineWeight);
+            horiztontalMove.To = startX + lineWeight / 2 + newPos.Item1 * (w_fix + lineWeight);
+            horiztontalMove.Duration = new Duration(TimeSpan.FromSeconds(0.5));
+
+            var verticalMove = new DoubleAnimation();
+            verticalMove.From = startY + lineWeight / 2 + oldPos.Item2 * (h_fix + lineWeight);
+            verticalMove.To = startY + lineWeight / 2 + newPos.Item2 * (h_fix + lineWeight);
+            verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.5));
 
             var story = new Storyboard();
 
-            story.Children.Add(animation);
-            Storyboard.SetTargetName(animation, selectedBitmap.Name);
-            Storyboard.SetTarget(animation, selectedBitmap);
-            switch(direction)
-            {
-                case 1:
-                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.LeftProperty));
-                    break;
-                case 2:
-                    Storyboard.SetTargetProperty(animation, new PropertyPath(Canvas.TopProperty));
-                    break;
-     
-            }
+            story.Children.Add(horiztontalMove);
+            story.Children.Add(verticalMove);
+
+            //Storyboard.SetTargetName(horiztontalMove, selectedBitmap.Name);
+            //Storyboard.SetTargetName(verticalMove, selectedBitmap.Name);
+
+            Storyboard.SetTarget(horiztontalMove, selectedBitmap);
+            Storyboard.SetTarget(verticalMove, selectedBitmap);
+
+            Storyboard.SetTargetProperty(horiztontalMove, new PropertyPath(Canvas.LeftProperty));
+            Storyboard.SetTargetProperty(verticalMove, new PropertyPath(Canvas.TopProperty));
+
             story.Begin(this);
+            story.Stop(this);
         }
 
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -507,9 +559,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //move that image
             if (maker.MovePiece(chosenPiece, emptySpace))
             {
-                
-                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + emptySpace.Item1 * (w_fix + lineWeight));
-                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + emptySpace.Item2 * (h_fix + lineWeight));
+
+                movePieceAnimation(chosenPiece, emptySpace);
                 bool isWIn = maker.CheckWin();
                 if (isWIn)
                 {
