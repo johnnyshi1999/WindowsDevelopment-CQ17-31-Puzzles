@@ -20,9 +20,6 @@
         </Grid.RowDefinitions>
         <Canvas Name="leftTopCanvas" Grid.Row="0" Grid.Column="0">
             <Label Content="8 PUZZLE" Foreground="#767167" FontWeight="Bold" FontSize="60" Canvas.Left="39" Canvas.Top="41" Height="82" Width="279" Padding="0"></Label>
-            <Button Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                    Canvas.Left="325" Canvas.Top="126" Height="36" Width="122" 
-                    Click="NewGame_Click"></Button>
             <Label  Style="{StaticResource FlatLabelStyle}" Canvas.Left="375" Canvas.Top="21" Height="60" Width="72" FontWeight="Bold">
                 <StackPanel Orientation="Vertical">
                     <Label Content="Time" Foreground="#FBF8F1" FontSize="20" Padding="0" />
@@ -30,8 +27,19 @@
                 </StackPanel>
             </Label>
             <!--<Canvas Name="leftBottomCanvas" Height="503" Width="506" Canvas.Top="167">
-                <Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />
-            </Canvas>-->
+                    <Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />
+                </Canvas>-->
+            <StackPanel Orientation="Horizontal" Canvas.Left="62" Canvas.Top="125">
+                <Button Name="StartGameButton" Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122"
+                        Click="NewGame_Click"></Button>
+                <Button Name="SaveGameButton" Content="Save Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122" Margin="10,0,10,0" 
+                        Click="SaveGame_Click"></Button>
+                <Button Name="LoadGameButton" Content="Load Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122" 
+                        Click="LoadGame_Click"></Button>
+            </StackPanel>
         </Canvas>
         <Canvas Name="leftBottomCanvas" Grid.Row="1" Grid.Column="0">
             <!--<Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />-->
