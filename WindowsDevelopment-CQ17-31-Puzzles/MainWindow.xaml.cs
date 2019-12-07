@@ -111,9 +111,11 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
                         cropImage.MouseLeftButtonDown += CropImage_MouseLeftButtonDown;
                         cropImage.PreviewMouseLeftButtonUp += CropImage_PreviewMouseLeftButtonUp;
-                        cropImage.Tag = i * 3 + j;
+                        
 
                         Tuple<int, int> position = maker.GetPiecePosition(i * 3 + j);
+
+                        cropImage.Tag = i * 3 + j;
 
                         Canvas.SetLeft(cropImage, startX + lineWeight/2 + position.Item1 * (w_fix + lineWeight));
                         Canvas.SetTop(cropImage, startY  + lineWeight/2 + position.Item2 * (h_fix + lineWeight));
@@ -171,24 +173,35 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         {
             isDragging = false;
             var position = e.GetPosition(this);
-            int i = (int)(position.Y - startY - leftTopCanvas.ActualHeight) / rowHeight;
-            int j = (int)(position.X - startX) / colWidth;
+            int i = (int)(position.X - startX) / colWidth;
+            int j = (int)(position.Y - startY - leftTopCanvas.ActualHeight) / rowHeight;
 
-            if (i >= 0 && i <= rows - 1  && j >= 0 && j <= cols - 1)
+            Tuple<int, int> newPosition = new Tuple<int, int>(i, j);
+
+            int oldX = (int)(oldPosition_piece.X - startX) / colWidth;
+            int oldY = (int)(oldPosition_piece.Y - startY - leftTopCanvas.ActualHeight) / rowHeight;
+
+            Tuple<int, int> oldPosition = new Tuple<int, int>(oldX, oldY);
+
+            if (maker.MovePiece(oldPosition, newPosition))
             {
-                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + j * (w_fix + lineWeight));
-                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + i * (h_fix + lineWeight));
+                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + i * (w_fix + lineWeight));
+                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + j * (h_fix + lineWeight));
+                bool isWIn = maker.CheckWin();
+                if (isWIn)
+                {
+                    MessageBox.Show("You won!!!!");
+                }
             }
             // Snap to old position if piece is out of range
             else
             {
-                i = (int)(oldPosition_piece.Y - startY - leftTopCanvas.ActualHeight) / rowHeight;
-                j = (int)(oldPosition_piece.X - startX) / colWidth;
-                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + j * (w_fix + lineWeight));
-                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + i * (h_fix + lineWeight));
+                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + oldX * (w_fix + lineWeight));
+                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + oldY * (h_fix + lineWeight));
             }
         }
 
+        
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             count--;
@@ -234,5 +247,79 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 line_vertical.Y2 = startY + rows * rowHeight;
             }
         }
+
+        private void Hint_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DirectionButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tuple<int, int> emptySpace = maker.GetPiecePosition(8);
+            Tuple<int, int> chosenPiece = new Tuple<int, int>(0, 0);
+            if (sender == UpButton)
+            {
+                chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 + 1);
+            }
+            if (sender == DownButton)
+            {
+                chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 - 1);
+            }
+            if (sender == LeftButton)
+            {
+                chosenPiece = new Tuple<int, int>(emptySpace.Item1 + 1, emptySpace.Item2);
+            }
+            if (sender == RighButton)
+            {
+                chosenPiece = new Tuple<int, int>(emptySpace.Item1 - 1, emptySpace.Item2);
+            }
+
+            if (chosenPiece.Item1 < 0 || chosenPiece.Item1 > cols - 1)
+            {
+                return;
+            }
+
+            if (chosenPiece.Item2 < 0 || chosenPiece.Item2 > rows - 1)
+            {
+                return;
+            }
+
+            //find selected image
+            int ImageTag = maker.PieceOrder[chosenPiece.Item1, chosenPiece.Item2];
+            selectedBitmap = findImageByTag(ImageTag);
+
+            //move that image
+            if (maker.MovePiece(chosenPiece, emptySpace))
+            {
+                
+                Canvas.SetLeft(selectedBitmap, startX + lineWeight / 2 + emptySpace.Item1 * (w_fix + lineWeight));
+                Canvas.SetTop(selectedBitmap, startY + lineWeight / 2 + emptySpace.Item2 * (h_fix + lineWeight));
+                bool isWIn = maker.CheckWin();
+                if (isWIn)
+                {
+                    MessageBox.Show("You won!!!!");
+                }
+            }
+        }
+
+        
+
+        Image findImageByTag(int tag)
+        {
+            var images = leftBottomCanvas.Children.OfType<Image>().ToList();
+            for (int i = 0; i < images.Count; i++)
+            {
+                var img = images[i];
+                if (img.Tag.ToString() == tag.ToString())
+                {
+                    return img;
+                }
+            }
+            return null;
+        }
+
+
+
+
     }
 }

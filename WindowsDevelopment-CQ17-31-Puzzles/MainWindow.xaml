@@ -38,19 +38,32 @@
         </Canvas>
         <Canvas Name="rightCanvas" Grid.Row="0" Grid.Column="1"  Grid.RowSpan="2">
             <Label Style="{StaticResource FlatLabelStyle}" Content="Your image" Canvas.Left="29" Canvas.Top="41" Foreground="White" Height="35" Width="130" FontSize="20" FontWeight="Bold"/>
-            <Button Name="LeftButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="509" Canvas.Left="29" Width="81" Height="85" RenderTransformOrigin="0.188,0.471">
+            <Button Name="LeftButton" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Top="509" Canvas.Left="29" Width="81" Height="85" RenderTransformOrigin="0.188,0.471"
+                    Click="DirectionButton_Click">
                 <Image Source="images/button_left.png" />
             </Button>
-            <Button Name="RighButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="509" Canvas.Left="227" Width="81" Height="85">
+            <Button Name="RighButton" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Top="509" Canvas.Left="227" Width="81" Height="85"
+                    Click="DirectionButton_Click">
                 <Image Source="images/button_right.png" />
             </Button>
-            <Button Name="UpButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="404" Canvas.Left="131" Width="80" Height="80">
+            <Button Name="UpButton" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Top="404" Canvas.Left="131" 
+                    Width="80" Height="80"
+                    Click="DirectionButton_Click">
                 <Image Source="images/button_up.png" />
             </Button>
-            <Button Name="DownButton" Style="{StaticResource FlatButtonStyle}" Canvas.Top="509" Canvas.Left="131" Width="81" Height="85">
+            <Button Name="DownButton" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Top="509" Canvas.Left="131" Width="81" Height="85"
+                    Click="DirectionButton_Click">
                 <Image Source="images/button_down.png" />
             </Button>
             <Image Name ="PreviewImage"  Height="280" Width="280" Canvas.Left="29" Canvas.Top="88" />
+
+            <Button Content="Hint" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Left="187" Canvas.Top="40" Height="36" Width="122" 
+                    Click="Hint_Click"></Button>
         </Canvas>
     </Grid>
 </Window>

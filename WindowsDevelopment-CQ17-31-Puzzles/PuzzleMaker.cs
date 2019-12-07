@@ -13,13 +13,14 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         static int columms = 3;
         int[,] _a { get; set; }
 
-        public int[,] PuzzleTags
+        public int[,] PieceOrder
         {
             get
             {
                 return _a;
             }
         }
+        public List<Tuple<int,int>> phases;
 
         static public PuzzleMaker GetInstance()
         {
@@ -28,6 +29,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 maker = new PuzzleMaker
                 {
                     _a = new int[rows, columms],
+                    phases = new List<Tuple<int, int>>(),
                 };
             }
             return maker;
@@ -46,8 +48,10 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             int x = rows - 1;
             int y = columms - 1;
 
+            
+
             Random rng = new Random();
-            int swapTime = rng.Next(10, 50);
+            int swapTime = rng.Next(5, 10);
 
             for (int i = 0; i < swapTime; i++)
             {
@@ -98,6 +102,14 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         _a[oldX, oldY] = _a[x, y];
                         _a[x, y] = 8;
                         moveSuccess = true;
+
+                        Tuple<int, int> temp = new Tuple<int, int>(x, y);
+
+                        Tuple<int, int> temp2 = new Tuple<int, int>(oldX, oldY);
+                        phases.Add(temp2);
+                        phases.Add(temp);
+
+                        Test();
                     }
 
                 }
@@ -145,14 +157,40 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         public bool MovePiece(Tuple<int, int> oldPos, Tuple<int, int> newPos)
         {
 
+            //if the moved to postion is not the empty space
             if (_a[newPos.Item1, newPos.Item2] != 8)
             {
                 return false;
             }
 
+            //if the position is out of range
+            if (newPos.Item1 < 0 || newPos.Item1 > columms - 1|| newPos.Item2 < 0 || newPos.Item2 > rows - 1)
+            {
+                return false;
+            }
+
+            //if the moved-to-position is not aligned with the old one
+            if (newPos.Item1 == oldPos.Item1 && Math.Abs(newPos.Item2 - oldPos.Item2) != 1)
+            {
+                return false;
+            }
+
+            if (newPos.Item2 == oldPos.Item2 && Math.Abs(newPos.Item1 - oldPos.Item1) != 1)
+            {
+                return false;
+            }
+
+            if (newPos.Item1 != oldPos.Item1 && newPos.Item2 != oldPos.Item2)
+            {
+                return false;
+            }
+
+            //if all conditions are met
             _a[newPos.Item1, newPos.Item2] = _a[oldPos.Item1, oldPos.Item2];
             _a[oldPos.Item1, oldPos.Item2] = 8;
+            Test();
             return true;
+            
         }
 
         public bool CheckWin()
@@ -166,7 +204,21 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                     return false;
                 checkedTag++;
             }
+            Test();
             return true;
+        }
+
+        void Test()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Console.Write(_a[j, i]);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
         }
     }
 }
