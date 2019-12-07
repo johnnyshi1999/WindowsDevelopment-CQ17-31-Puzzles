@@ -256,22 +256,22 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 {
                     case Key.Left:
                         {
-                            LeftButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            LeftButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Right:
                         {
-                            RighButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            RighButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Up:
                         {
-                            UpButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            UpButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                     case Key.Down:
                         {
-                            DownButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                            DownButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
                             break;
                         }
                 }
@@ -490,7 +490,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         private void completed(object sender, EventArgs e)
         {
             story.Remove(selectedBitmap);
-            MessageBox.Show("finished");
+            System.Windows.MessageBox.Show("finished");
         }
 
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -637,6 +637,13 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
                 //Get image path
                 string imagePath = reader.ReadLine();
+
+                //If file doesn't exists
+                if(!File.Exists(imagePath))
+                {
+                    System.Windows.MessageBox.Show("Image from save file does not exist, please recheck :3 ...", "Image not found", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 //Get time
                 double currentTime = double.Parse(reader.ReadLine());
