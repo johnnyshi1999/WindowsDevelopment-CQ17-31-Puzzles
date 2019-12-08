@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -227,6 +228,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         }
 
         bool isDragging = false;
+        bool isMoving = false;
         Image selectedBitmap = null;
         Point lastPosition_piece;
         Point oldPosition_piece;
@@ -272,7 +274,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (!isDragging)
+            if (!isDragging && !isMoving)
             {
                 switch (e.Key)
                 {
@@ -420,7 +422,6 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //}
         }
 
-        Storyboard story;
         /// <summary>
         ///     Move piece effect with animation
         ///     This function use selectedBitmap property as target to move
@@ -435,6 +436,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         /// </param>
         private void movePieceAnimation(Tuple<int, int> oldPos, Tuple<int, int> newPos/*int from, int to, int direction*/)
         {
+            
             //var animation = new DoubleAnimation();
 
             //animation.From = from;
@@ -457,17 +459,18 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
             //}
             //story.Begin(this);
+
             var horiztontalMove = new DoubleAnimation();
             horiztontalMove.From = startX + lineWeight / 2 + oldPos.Item1 * (w_fix + lineWeight);
             horiztontalMove.To = startX + lineWeight / 2 + newPos.Item1 * (w_fix + lineWeight);
-            horiztontalMove.Duration = new Duration(TimeSpan.FromSeconds(0.5));
+            horiztontalMove.Duration = new Duration(TimeSpan.FromSeconds(0.3));
 
             var verticalMove = new DoubleAnimation();
             verticalMove.From = startY + lineWeight / 2 + oldPos.Item2 * (h_fix + lineWeight);
             verticalMove.To = startY + lineWeight / 2 + newPos.Item2 * (h_fix + lineWeight);
-            verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.5));
+            verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.3));
 
-            story = new Storyboard();
+            var story = new Storyboard();
 
             story.Children.Add(horiztontalMove);
             story.Children.Add(verticalMove);
@@ -483,10 +486,16 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
 
             story.FillBehavior = FillBehavior.Stop;
-            story.Completed += new System.EventHandler(this.Story_Complete);
+
+            Tuple<int, int> newXY = new Tuple<int, int>((int)horiztontalMove.To, (int)verticalMove.To);
+
+            // pass parameter to Story_Complete
+            story.Completed += delegate (object sender, EventArgs e)
+            {
+                Story_Complete(sender, e, newXY);
+            };
             story.Begin(this);
             
-
 
 
 
@@ -513,16 +522,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             //trans.BeginAnimation(TranslateTransform.YProperty, null);
         }
 
-        private void Story_Complete(object sender, EventArgs e)
+        private void Story_Complete(object sender, EventArgs e, Tuple<int, int> newXY)
         {
-            Canvas.SetLeft(selectedBitmap, Canvas.GetLeft(selectedBitmap));
-            Canvas.SetTop(selectedBitmap, Canvas.GetTop(selectedBitmap));
-        }
+            Canvas.SetLeft(selectedBitmap, newXY.Item1);
+            Canvas.SetTop(selectedBitmap, newXY.Item2);
+            isMoving = false;
 
-        private void completed(object sender, EventArgs e)
-        {
-            story.Remove(selectedBitmap);
-            System.Windows.MessageBox.Show("finished");
         }
 
         private void CropImage_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -713,53 +718,61 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         private void DirectionButton_Click(object sender, RoutedEventArgs e)
         {
-            Tuple<int, int> emptySpace = maker.GetPiecePosition(8);
-            Tuple<int, int> chosenPiece = new Tuple<int, int>(0, 0);
-            if (sender == UpButton)
+            if (!isDragging && !isMoving)
             {
-                chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 + 1);
-            }
-            if (sender == DownButton)
-            {
-                chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 - 1);
-            }
-            if (sender == LeftButton)
-            {
-                chosenPiece = new Tuple<int, int>(emptySpace.Item1 + 1, emptySpace.Item2);
-            }
-            if (sender == RighButton)
-            {
-                chosenPiece = new Tuple<int, int>(emptySpace.Item1 - 1, emptySpace.Item2);
-            }
+                Tuple<int, int> emptySpace = maker.GetPiecePosition(8);
+                Tuple<int, int> chosenPiece = new Tuple<int, int>(0, 0);
 
-            if (chosenPiece.Item1 < 0 || chosenPiece.Item1 > cols - 1)
-            {
-                return;
-            }
 
-            if (chosenPiece.Item2 < 0 || chosenPiece.Item2 > rows - 1)
-            {
-                return;
-            }
-
-            //find selected image
-            int ImageTag = maker.PieceOrder[chosenPiece.Item1, chosenPiece.Item2];
-            selectedBitmap = findImageByTag(ImageTag);
-
-            //move that image
-            if (maker.MovePiece(chosenPiece, emptySpace))
-            {
-
-                movePieceAnimation(chosenPiece, emptySpace);
-                bool isWIn = maker.CheckWin();
-                if (isWIn)
+                if (sender == UpButton)
                 {
-                    _timer.Stop();
-                    leftBottomCanvas.IsEnabled = false;
-                    System.Windows.MessageBox.Show("You won!!!!");
-                    resetVariables();
+                    chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 + 1);
+                }
+                if (sender == DownButton)
+                {
+                    chosenPiece = new Tuple<int, int>(emptySpace.Item1, emptySpace.Item2 - 1);
+                }
+                if (sender == LeftButton)
+                {
+                    chosenPiece = new Tuple<int, int>(emptySpace.Item1 + 1, emptySpace.Item2);
+                }
+                if (sender == RighButton)
+                {
+                    chosenPiece = new Tuple<int, int>(emptySpace.Item1 - 1, emptySpace.Item2);
+                }
+
+                if (chosenPiece.Item1 < 0 || chosenPiece.Item1 > cols - 1)
+                {
+                    return;
+                }
+
+                if (chosenPiece.Item2 < 0 || chosenPiece.Item2 > rows - 1)
+                {
+                    return;
+                }
+
+                isMoving = true;
+                
+                //find selected image
+                int ImageTag = maker.PieceOrder[chosenPiece.Item1, chosenPiece.Item2];
+                selectedBitmap = findImageByTag(ImageTag);
+
+                //move that image
+                if (maker.MovePiece(chosenPiece, emptySpace))
+                {
+                    movePieceAnimation(chosenPiece, emptySpace);
+                    
+                    bool isWIn = maker.CheckWin();
+                    if (isWIn)
+                    {
+                        _timer.Stop();
+                        leftBottomCanvas.IsEnabled = false;
+                        System.Windows.MessageBox.Show("You won!!!!");
+                        resetVariables();
+                    }
                 }
             }
+            
         }
 
         private void resetVariables()
