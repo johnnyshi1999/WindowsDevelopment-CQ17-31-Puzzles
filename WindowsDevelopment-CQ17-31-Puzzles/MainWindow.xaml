@@ -70,9 +70,17 @@
             </Button>
             <Image Name ="PreviewImage"  Height="280" Width="280" Canvas.Left="29" Canvas.Top="88" />
 
-            <Button Content="Hint" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                    Canvas.Left="187" Canvas.Top="40" Height="36" Width="122" 
-                    Click="Hint_Click"></Button>
+            <Button FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Left="187" Canvas.Top="40" Height="36" Width="36" 
+                    Click="Undo_Click">
+                <Image Source="images/undo.png" Margin="3" RenderOptions.BitmapScalingMode="Fant"/>
+            </Button>
+
+            <Button FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Left="249" Canvas.Top="40" Height="36" Width="36" 
+                    Click="Redo_Click">
+                <Image Source="images/redo.png" Margin="3" RenderOptions.BitmapScalingMode="Fant"/>
+            </Button>
         </Canvas>
     </Grid>
 </Window>

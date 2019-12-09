@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 
 namespace WindowsDevelopment_CQ17_31_Puzzles
 {
-    class PuzzleMaker
+    public class phase
     {
+        public Tuple<int, int> from;
+        public Tuple<int, int> to;
+        public int piece;
+
+    }
+
+
+    class PuzzleMaker
+    {        
         static private PuzzleMaker maker = null;
         static int rows = 3;
         static int columms = 3;
         int[,] _a { get; set; }
-
+        public int Difficulty;
         public int[,] PieceOrder
         {
             get
@@ -20,7 +29,8 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 return _a;
             }
         }
-        public List<Tuple<int,int>> phases;
+        private List<phase> phases;
+        int currentPhase;
 
         static public PuzzleMaker GetInstance()
         {
@@ -29,7 +39,9 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 maker = new PuzzleMaker
                 {
                     _a = new int[rows, columms],
-                    phases = new List<Tuple<int, int>>(),
+                    phases = new List<phase>(),
+                    currentPhase = -1,
+                    Difficulty = 32,
                 };
             }
             return maker;
@@ -51,8 +63,9 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             
 
             Random rng = new Random();
-            int swapTime = rng.Next(5, 10);
+            int swapTime = rng.Next(Difficulty - 2, Difficulty + 2);
 
+            int oldDirection = -1;
             for (int i = 0; i < swapTime; i++)
             {
                 int direction = 0;
@@ -62,7 +75,13 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 {
                     int oldX = x;
                     int oldY = y;
-                    direction = rng.Next(0, 3);
+
+                    do
+                    {
+                        direction = rng.Next(0, 3);
+                    } while (Math.Abs(direction - oldDirection) == 2); // prevent repeat shuffle, if the direction is repeated, Math.Abs(direction - oldDirection) == 2 
+
+                    oldDirection = direction;
 
                     // move to the left
 
@@ -102,12 +121,6 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         _a[oldX, oldY] = _a[x, y];
                         _a[x, y] = 8;
                         moveSuccess = true;
-
-                        Tuple<int, int> temp = new Tuple<int, int>(x, y);
-
-                        Tuple<int, int> temp2 = new Tuple<int, int>(oldX, oldY);
-                        phases.Add(temp2);
-                        phases.Add(temp);
 
                         Test();
                     }
@@ -185,6 +198,15 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
 
             //if all conditions are met
+            phase newPhase = new phase()
+            {
+                from = new Tuple<int, int>(oldPos.Item1, oldPos.Item2),
+                to = new Tuple<int, int>(newPos.Item1, newPos.Item2),
+                piece = _a[oldPos.Item1, oldPos.Item2],
+            };
+
+            savePhase(newPhase);
+
             _a[newPos.Item1, newPos.Item2] = _a[oldPos.Item1, oldPos.Item2];
             _a[oldPos.Item1, oldPos.Item2] = 8;
             Test();
@@ -205,6 +227,67 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             }
             Test();
             return true;
+        }
+
+        private void savePhase(phase NewPhase)
+        {
+            if (phases.Count - 1 > currentPhase)
+            {
+                int range = phases.Count - 1 - currentPhase;
+                phases.RemoveRange(currentPhase + 1, range);
+            }
+            phases.Add(NewPhase);
+            currentPhase++;
+        }
+
+        public bool UndoMove()
+        {
+            if (currentPhase >= 0)
+            {
+                phase oldPhase = phases[currentPhase];
+                _a[oldPhase.from.Item1, oldPhase.from.Item2] = _a[oldPhase.to.Item1, oldPhase.to.Item2];
+                _a[oldPhase.to.Item1, oldPhase.to.Item2] = 8;
+                currentPhase--;
+                return true;
+            }
+            return false;
+        }
+
+        public bool RedoMove()
+        {
+            if (currentPhase >= -1 && currentPhase < phases.Count - 1)
+            {
+                phase newPhase = phases[currentPhase + 1];
+                _a[newPhase.to.Item1, newPhase.to.Item2] = _a[newPhase.from.Item1, newPhase.from.Item2];
+                _a[newPhase.from.Item1, newPhase.from.Item2] = 8;
+                currentPhase++;
+                return true;
+            }
+            return false;
+        }
+
+        public phase GetCurrentPhase()
+        {
+            if (currentPhase >= 0)
+            {
+                return phases[currentPhase];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public phase GetNextPhase()
+        {
+            if (currentPhase >= -1 && currentPhase < phases.Count - 1)
+            {
+                return phases[currentPhase + 1];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         void Test()

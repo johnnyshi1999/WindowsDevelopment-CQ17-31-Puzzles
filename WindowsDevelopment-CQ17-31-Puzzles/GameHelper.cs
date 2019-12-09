@@ -12,7 +12,7 @@ using System.Windows.Threading;
 namespace WindowsDevelopment_CQ17_31_Puzzles
 {
     class GameHelper
-    {
+    {    
         public Image LoadedImage;
         PuzzleMaker maker;
         Timer timer;
