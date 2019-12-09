@@ -30,28 +30,17 @@
             <!--<Canvas Name="leftBottomCanvas" Height="503" Width="506" Canvas.Top="167">
                     <Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />
                 </Canvas>-->
-            <StackPanel Orientation="Horizontal" Canvas.Left="39" Canvas.Top="125">
-                <Button x:Name="StartGameButton" Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                        Height="36" Width="110"
-                        Click="NewGame_Click"/>
-                <Button x:Name="LoadGameButton" Content="Load Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                        Height="36" Width="110" Margin="10,0,10,0" 
-                        Click="LoadGame_Click"/>
-                <Button x:Name="SaveGameButton" Content="Save Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                        Height="36" Width="110" 
-                        Click="SaveGame_Click"/>
+            <StackPanel Orientation="Horizontal" Canvas.Left="62" Canvas.Top="125">
+                <Button Name="StartGameButton" Content="New Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122"
+                        Click="NewGame_Click"></Button>
+                <Button Name="LoadGameButton" Content="Load Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122" Margin="10,0,10,0" 
+                        Click="LoadGame_Click"></Button>
+                <Button Name="SaveGameButton" Content="Save Game" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                        Height="36" Width="122" 
+                        Click="SaveGame_Click"></Button>
             </StackPanel>
-            <Button FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                    Canvas.Left="400" Canvas.Top="125" Height="36" Width="36" 
-                    Click="Undo_Click">
-                <Image Source="images/undo.png" Margin="3"/>
-            </Button>
-
-            <Button FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
-                    Canvas.Left="450" Canvas.Top="125" Height="36" Width="36" 
-                    Click="Redo_Click">
-                <Image Source="images/redo.png" Margin="3"/>
-            </Button>
         </Canvas>
         <Canvas Name="leftBottomCanvas" Grid.Row="1" Grid.Column="0">
             <!--<Image Source="images/test.png" Canvas.Left="45" Canvas.Top="35" Height="400" Width="400" />-->
@@ -80,6 +69,10 @@
                 <Image Source="images/button_down.png" />
             </Button>
             <Image Name ="PreviewImage"  Height="280" Width="280" Canvas.Left="29" Canvas.Top="88" />
+
+            <Button Content="Hint" FontWeight="Bold" Style="{StaticResource FlatButtonStyle}" 
+                    Canvas.Left="187" Canvas.Top="40" Height="36" Width="122" 
+                    Click="Hint_Click"></Button>
         </Canvas>
     </Grid>
 </Window>
