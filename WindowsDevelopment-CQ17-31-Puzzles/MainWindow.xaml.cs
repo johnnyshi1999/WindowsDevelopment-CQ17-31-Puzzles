@@ -716,6 +716,16 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         }
 
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void DirectionButton_Click(object sender, RoutedEventArgs e)
         {
             if (!isDragging && !isMoving)
