@@ -16,7 +16,31 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
 
     class PuzzleMaker
-    {        
+    {
+        public static int Easy
+        {
+            get
+            {
+                return 12;
+            }
+        }
+
+        public static int Medium
+        {
+            get
+            {
+                return 42;
+            }
+        }
+
+        public static int Hard
+        {
+            get
+            {
+                return 72;
+            }
+        }
+
         static private PuzzleMaker maker = null;
         static int rows = 3;
         static int columms = 3;
@@ -49,6 +73,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         public void GeneratePuzzle()
         {
+            phases.Clear();
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columms; j++)
@@ -65,7 +90,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             Random rng = new Random();
             int swapTime = rng.Next(Difficulty - 2, Difficulty + 2);
 
-            int oldDirection = -1;
+            int oldDirection = 0;
             for (int i = 0; i < swapTime; i++)
             {
                 int direction = 0;
@@ -75,13 +100,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 {
                     int oldX = x;
                     int oldY = y;
-
                     do
                     {
-                        direction = rng.Next(0, 3);
-                    } while (Math.Abs(direction - oldDirection) == 2); // prevent repeat shuffle, if the direction is repeated, Math.Abs(direction - oldDirection) == 2 
-
-                    oldDirection = direction;
+                        int seed = rng.Next(100, 1000);
+                        direction = seed % 4;
+                    } while (Math.Abs(direction - oldDirection) == 2); // prevent repeat shuffle
+                    
 
                     // move to the left
 
@@ -121,7 +145,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                         _a[oldX, oldY] = _a[x, y];
                         _a[x, y] = 8;
                         moveSuccess = true;
-
+                        oldDirection = direction;
                         Test();
                     }
 
@@ -131,6 +155,7 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
 
         public void LoadPuzzle(int[,] save)
         {
+            phases.Clear();
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columms; j++)

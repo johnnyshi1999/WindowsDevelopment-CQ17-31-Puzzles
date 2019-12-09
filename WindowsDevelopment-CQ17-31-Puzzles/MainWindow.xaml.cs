@@ -165,6 +165,16 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
                 return;
             }
 
+            DifficultyDialog dialog = new DifficultyDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                maker.Difficulty = dialog.Difficulty;
+            }
+            else
+            {
+                maker.Difficulty = PuzzleMaker.Medium;
+            }
+
             maker.GeneratePuzzle();
            
             var screen = new Microsoft.Win32.OpenFileDialog();
@@ -463,12 +473,12 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
             var horiztontalMove = new DoubleAnimation();
             horiztontalMove.From = startX + lineWeight / 2 + oldPos.Item1 * (w_fix + lineWeight);
             horiztontalMove.To = startX + lineWeight / 2 + newPos.Item1 * (w_fix + lineWeight);
-            horiztontalMove.Duration = new Duration(TimeSpan.FromSeconds(0.3));
+            horiztontalMove.Duration = new Duration(TimeSpan.FromSeconds(0.2));
 
             var verticalMove = new DoubleAnimation();
             verticalMove.From = startY + lineWeight / 2 + oldPos.Item2 * (h_fix + lineWeight);
             verticalMove.To = startY + lineWeight / 2 + newPos.Item2 * (h_fix + lineWeight);
-            verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.3));
+            verticalMove.Duration = new Duration(TimeSpan.FromSeconds(0.2));
 
             var story = new Storyboard();
 
