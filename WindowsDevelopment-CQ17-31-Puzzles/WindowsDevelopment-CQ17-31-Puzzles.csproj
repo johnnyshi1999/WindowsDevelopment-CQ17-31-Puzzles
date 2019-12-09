@@ -125,7 +125,9 @@
     <Resource Include="images\icon_app.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\redo.png" />
     <Content Include="images\test.png" />
+    <Resource Include="images\undo.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
