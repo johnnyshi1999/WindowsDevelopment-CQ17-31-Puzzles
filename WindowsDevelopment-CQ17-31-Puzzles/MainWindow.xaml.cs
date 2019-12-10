@@ -729,8 +729,9 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         private void Undo_Click(object sender, RoutedEventArgs e)
         {
             phase currentPhase = maker.GetCurrentPhase();
-            if (currentPhase != null)
+            if (currentPhase != null && isMoving != true)
             {
+                isMoving = true;
                 selectedBitmap = findImageByTag(currentPhase.piece);
                 movePieceAnimation(currentPhase.to, currentPhase.from);
                 bool success = maker.UndoMove();
@@ -740,8 +741,9 @@ namespace WindowsDevelopment_CQ17_31_Puzzles
         private void Redo_Click(object sender, RoutedEventArgs e)
         {
             phase nextPhase = maker.GetNextPhase();
-            if (nextPhase != null)
+            if (nextPhase != null && isMoving != true)
             {
+                isMoving = true;
                 selectedBitmap = findImageByTag(nextPhase.piece);
                 movePieceAnimation(nextPhase.from, nextPhase.to);
                 bool success = maker.RedoMove();
